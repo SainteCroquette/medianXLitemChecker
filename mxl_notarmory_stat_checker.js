@@ -68,7 +68,7 @@ function insert_ranges(html, attr, minMax, val, arrayVal)
 {
     if (!minMax)
         return html
-    let idx =html.indexOf(attr) + attr.length
+    let idx = html.indexOf(attr) + attr.length
     let before = html.substring(0, idx)
     let after = html.substring(idx);
     let prop = (val - minMax[0]) / (minMax[1] - minMax[0]) * 100
@@ -89,14 +89,12 @@ function insert_ranges(html, attr, minMax, val, arrayVal)
         .then((sets) => {
         const set_items = JSON.parse(sets)
         const items = Object.assign({}, su_items , set_items)
-        console.log(items)
         const container = document.getElementById("itemdump_wrapper")
         const nodes = container.querySelectorAll(".item-inline")
         nodes.forEach(elem => {
             const name = elem.children[0].innerText.split(" (")[0].split(" [")[0]
             const attributes = elem.children[1].children[0].children[1].children[1]
             let itemProps = []
-            console.log(name)
             if (items[name]) {
                 let containerr = elem.children[1].children[0].children[1].children[1]
                 let stats = elem.children[1].children[0].children[1].children[1].innerText.split('\n')
@@ -120,9 +118,7 @@ function insert_ranges(html, attr, minMax, val, arrayVal)
             elem.children[1].children[0].children[1].children[0].children[0].innerHTML += " - <span style=\"color:"+color_result(avg)+";\">" +avg + "%</span>"
             elem.children[0].innerHTML += " - <span style=\"color:"+color_result(avg)+";\">" +avg + "%</span>"
                 if (avg >= 100) {
-                console.log(elem.children[0].innerHTML)
                 setInterval(function(){ elem.children[0].innerHTML = rainbow_string( elem.children[0].innerText);}, 100);
-                console.log(elem.children[1].children[0].children[1].children[0].children[0].innerHTML)
 
             }
             }
