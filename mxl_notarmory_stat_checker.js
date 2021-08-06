@@ -12,6 +12,20 @@ const RAINBOW = ["#ff0000",
     "#ff00ab",
     "#ff005a"]
 
+const COLOR_CODES = [
+    [100, "#4dff00"],
+    [90, "#7fef00"],
+    [80, "#9fde00"],
+    [70, "#b7cd00"],
+    [60, "#cbba00"],
+    [50, "#dba600"],
+    [40, "#e99100"],
+    [30, "#f37900"],
+    [20, "#fa5f00"],
+    [10, "#fe4000"],
+    [0, "#ff0000"]
+]
+
 function rainbow_string(str) {
     let time = Math.floor(Date.now() / 100)
     let colored = ""
@@ -34,21 +48,8 @@ function findDiff(str1, str2) {
     return undefined;
 }
 
-const COLOR_CODES = [
-    [100, "#4dff00"],
-    [90, "#7fef00"],
-    [80, "#9fde00"],
-    [70, "#b7cd00"],
-    [60, "#cbba00"],
-    [50, "#dba600"],
-    [40, "#e99100"],
-    [30, "#f37900"],
-    [20, "#fa5f00"],
-    [10, "#fe4000"],
-    [0, "#ff0000"]
-]
-
 function get_percentage_color(p) {
+    return COLOR_CODES[i][1]
     for (let i = 0; i < COLOR_CODES.length; i++) {
         if (p >= COLOR_CODES[i][0]) {
             return COLOR_CODES[i][1]
@@ -87,6 +88,74 @@ function insert_ranges(html, attr, minMax, val, itemProperties) {
     return format_attribute_line(before, after, minMax[0], minMax[1], prop)
 }
 
+function get_item_table_container() {
+    return document.getElementById("itemdump_wrapper")
+}
+
+function get_item_name(elem) {
+    return elem.children[0].innerText.split(" (")[0].split(" [")[0]
+}
+
+function get_attribute_container(elem) {
+    return elem.children[1].children[0].children[1].children[1]
+}
+
+function create_attribute_regex(ref) {
+    let regex = ref
+    regex = regex.replace("+", "\\+")
+    regex = regex.replace("%", "\\%")
+    regex = regex.replace("#", "\\d+")
+    regex = "\\w*" + regex + "$"
+    return regex
+}
+
+function iterate_item_attributes(refTable, name, attributes, container, itemProperties) {
+    refTable[name].forEach(ref => {
+        const reg = new RegExp(create_attribute_regex(ref[0]))
+        attributes.forEach(att => {
+            if (att.match(reg)) {
+                container.innerHTML = insert_ranges(container.innerHTML, att, ref[1], findDiff(ref[0], att), itemProperties)
+            }
+        })
+    })
+}
+
+function get_main_table_item_name(elem) {
+    return elem.children[0]
+}
+
+function get_item_viewer_title(elem) {
+    return elem.children[1].children[0].children[1].children[0].children[0]
+}
+
+function format_item_total_value(avg, elem) {
+    get_item_viewer_title(elem).innerHTML += " - <span style=\"color:" + get_percentage_color(avg) + ";\">" + avg + "%</span>"
+    let table_item_name = get_main_table_item_name(elem)
+    table_item_name.innerHTML += " - <span style=\"color:" + get_percentage_color(avg) + ";\">" + avg + "%</span>"
+    if (avg >= 100) {
+        setInterval(function () {
+            table_item_name.innerHTML = rainbow_string(table_item_name.innerText);
+        }, 100);
+    }
+}
+
+function iterate_table_entries(nodes, refTable) {
+    nodes.forEach(elem => {
+        const name = get_item_name(elem)
+        let itemProperties = []
+        if (refTable[name]) {
+            let attributesContainer = get_attribute_container(elem)
+            let attributes = attributesContainer.innerText.split('\n')
+            attributes = attributes.map(strings => strings.trim())
+            iterate_item_attributes(refTable, name, attributes, attributesContainer, itemProperties)
+        }
+        if (itemProperties.length > 0) {
+            let avg = calc_avg(itemProperties).toFixed(0)
+            format_item_total_value(avg, elem)
+        }
+    })
+}
+
 (function () {
     'use strict';
     const sacred_unique_url = "https://raw.githubusercontent.com/SainteCroquette/medianXLitemChecker/main/sacred_unique.json"
@@ -102,41 +171,7 @@ function insert_ranges(html, attr, minMax, val, itemProperties) {
                     const items = Object.assign({}, su_items, set_items)
                     const container = document.getElementById("itemdump_wrapper")
                     const nodes = container.querySelectorAll(".item-inline")
-                    nodes.forEach(elem => {
-                        const name = elem.children[0].innerText.split(" (")[0].split(" [")[0]
-                        const attributes = elem.children[1].children[0].children[1].children[1]
-                        let itemProps = []
-                        if (items[name]) {
-                            let containerr = elem.children[1].children[0].children[1].children[1]
-                            let stats = elem.children[1].children[0].children[1].children[1].innerText.split('\n')
-                            stats = stats.map(strings => strings.trim())
-                            items[name].forEach(ref => {
-                                let reAt = ref[0]
-                                reAt = reAt.replace("+", "\\+")
-                                reAt = reAt.replace("%", "\\%")
-                                reAt = reAt.replace("#", "\\d+")
-                                reAt = "\\w*" + reAt + "$"
-                                const reg = new RegExp(reAt)
-                                stats.forEach(att => {
-
-                                    if (att.match(reg)) {
-                                        containerr.innerHTML = insert_ranges(containerr.innerHTML, att, ref[1], findDiff(ref[0], att), itemProps)
-                                    }
-                                })
-                            })
-                        }
-                        if (itemProps.length > 0) {
-                            let avg = calc_avg(itemProps).toFixed(0)
-                            elem.children[1].children[0].children[1].children[0].children[0].innerHTML += " - <span style=\"color:" + get_percentage_color(avg) + ";\">" + avg + "%</span>"
-                            elem.children[0].innerHTML += " - <span style=\"color:" + get_percentage_color(avg) + ";\">" + avg + "%</span>"
-                            if (avg >= 100) {
-                                setInterval(function () {
-                                    elem.children[0].innerHTML = rainbow_string(elem.children[0].innerText);
-                                }, 100);
-
-                            }
-                        }
-                    })
+                    iterate_table_entries(nodes, items)
                 }).catch((error) => {
                 console.error(error);
             })
