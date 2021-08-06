@@ -104,7 +104,7 @@ function create_attribute_regex(ref) {
     regex = regex.replace("+", "\\+")
     regex = regex.replace("%", "\\%")
     regex = regex.replace("#", "\\d+")
-    regex = "\\w*" + regex + "$"
+    regex = "\\w*^" + regex + "$"
     return regex
 }
 
