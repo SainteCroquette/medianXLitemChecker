@@ -1,3 +1,15 @@
+// ==UserScript==
+// @name NotArmory Item Checker dev+test
+// @namespace
+// @version 1.0
+// @description NotArmory helper
+// @author SainteCroquette
+// @match https://tsw.vn.cz/char/*
+// @match https://tsw.vn.cz/acc/char.php?name=*
+// @icon https://www.google.com/s2/favicons?domain=vn.cz
+// @grant none
+// ==/UserScript==
+
 const RAINBOW = ["#ff0000",
     "#f08100",
     "#bec600",
@@ -38,14 +50,17 @@ function rainbow_string(str) {
 function findDiff(str1, str2) {
     let i = 0;
     let j = 0;
+    let values = []
+
     while (i < str1.length) {
         if (str1[i] === '#') {
-            return parseInt(str2.substr(i, str2.length))
+            values.push(parseInt(str2.substr(j, str2.length)))
+            j += values[values.length - 1].toString().length - 1
         }
         ++i;
         ++j;
     }
-    return undefined;
+    return values;
 }
 
 function get_percentage_color(p) {
@@ -65,15 +80,16 @@ function calc_avg(array) {
     return total / array.length
 }
 
-function format_attribute_line(before, after, min, max, val) {
-    return before
-        + "<span style=\"color:grey;padding-left:5px;\">"
-        + "(" + min + " - " + max + ")"
-        + " - </span><span style=\"color:"
+function format_attribute_line(before, after, minMax, val) {
+    let code = before + "<span style=\"color:grey;padding-left:5px;\">"
+    for (let i = 0; i < minMax.length; i++) {
+        code += "(" + minMax[i][0] + " - " + minMax[i][1] + ") - "
+    }
+    code += "</span><span style=\"color:"
         + get_percentage_color(val) + ";\">"
         + val.toFixed(0) + "%</span>"
         + after
-
+    return code
 }
 
 function insert_ranges(html, attr, minMax, val, itemProperties) {
@@ -82,9 +98,13 @@ function insert_ranges(html, attr, minMax, val, itemProperties) {
     let idx = html.indexOf(attr) + attr.length
     let before = html.substring(0, idx)
     let after = html.substring(idx);
-    let prop = (val - minMax[0]) / (minMax[1] - minMax[0]) * 100
+    let total = 0
+    for (let i = 0; i < val.length; i++) {
+        total += (val[i] - minMax[i][0]) / (minMax[i][1] - minMax[i][0]) * 100
+    }
+    const prop = total / val.length
     itemProperties.push(prop)
-    return format_attribute_line(before, after, minMax[0], minMax[1], prop)
+    return format_attribute_line(before, after, minMax, prop)
 }
 
 function get_item_table_container() {
@@ -106,7 +126,7 @@ function create_attribute_regex(ref) {
     regex = regex.replaceAll("(", "\\(")
     regex = regex.replaceAll(")", "\\)")
     regex = regex.replaceAll("#", "\\d+")
-    regex = "\\w*^" + regex + "$"
+    regex = "\^\w*" + regex + "$"
     return regex
 }
 
@@ -115,7 +135,7 @@ function iterate_item_attributes(refTable, name, attributes, container, itemProp
         const reg = new RegExp(create_attribute_regex(ref[0]))
         attributes.forEach(att => {
             if (att.match(reg)) {
-                container.innerHTML = insert_ranges(container.innerHTML, att, ref[1], findDiff(ref[0], att), itemProperties)
+                container.innerHTML = insert_ranges(container.innerHTML, att, ref.slice(1), findDiff(ref[0], att), itemProperties)
             }
         })
     })
@@ -143,6 +163,7 @@ function format_item_total_value(avg, elem) {
 function iterate_table_entries(nodes, refTable) {
     nodes.forEach(elem => {
         const name = get_item_name(elem)
+
         let itemProperties = []
         if (refTable[name]) {
             let attributesContainer = get_attribute_container(elem)
@@ -161,7 +182,6 @@ function iterate_table_entries(nodes, refTable) {
     'use strict';
     const sacred_unique_url = "https://raw.githubusercontent.com/SainteCroquette/medianXLitemChecker/main/sacred_unique.json"
     const set_url = "https://raw.githubusercontent.com/SainteCroquette/medianXLitemChecker/main/set.json"
-
     $.ajax({
         url: sacred_unique_url,
         success: (data) => {
