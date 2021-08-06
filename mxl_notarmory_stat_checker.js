@@ -9,15 +9,6 @@ function rainbow_string(str) {
     return colored
 }
 
-
-function pausecomp(millis)
-{
-    var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < millis);
-}
-
 function findDiff(str1, str2){
   let diff= "g";
   let i = 0;
