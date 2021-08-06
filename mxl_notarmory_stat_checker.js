@@ -159,22 +159,21 @@ function iterate_table_entries(nodes, refTable) {
     'use strict';
     const sacred_unique_url = "https://raw.githubusercontent.com/SainteCroquette/medianXLitemChecker/main/sacred_unique.json"
     const set_url = "https://raw.githubusercontent.com/SainteCroquette/medianXLitemChecker/main/set.json"
-    fetch(sacred_unique_url)
-        .then(response => response.text())
-        .then((sacred_uniques) => {
-            const su_items = JSON.parse(sacred_uniques)
-            fetch(set_url)
-                .then(response => response.text())
-                .then((sets) => {
-                    const set_items = JSON.parse(sets)
+
+    $.ajax({
+        url: sacred_unique_url,
+        success: (data) => {
+            const su_items = JSON.parse(data)
+            $.ajax({
+                url: set_url,
+                success: (data) => {
+                    const set_items = JSON.parse(data)
                     const items = Object.assign({}, su_items, set_items)
-                    const container = document.getElementById("itemdump_wrapper")
+                    const container = get_item_table_container()
                     const nodes = container.querySelectorAll(".item-inline")
                     iterate_table_entries(nodes, items)
-                }).catch((error) => {
-                console.error(error);
+                }
             })
-        }).catch((error) => {
-        console.error(error);
+        }
     })
 })();
