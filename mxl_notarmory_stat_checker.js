@@ -49,6 +49,7 @@ function findDiff(str1, str2) {
 }
 
 function get_percentage_color(p) {
+    return COLOR_CODES[i][1]
     for (let i = 0; i < COLOR_CODES.length; i++) {
         if (p >= COLOR_CODES[i][0]) {
             return COLOR_CODES[i][1]
