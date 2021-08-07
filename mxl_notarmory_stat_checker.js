@@ -155,6 +155,8 @@ function create_attribute_regex(ref) {
     regex = regex.replaceAll("%", "\\%")
     regex = regex.replaceAll("(", "\\(")
     regex = regex.replaceAll(")", "\\)")
+    regex = regex.replace("!", "(")
+    regex = regex.replace("!", ")")
     regex = regex.replaceAll("#", "\\d+")
     regex = "\^\w*" + regex + "$"
     return regex
@@ -215,8 +217,8 @@ function iterate_table_entries(nodes, refTable) {
 
 (function () {
     'use strict';
-    const sacred_unique_url = "https://raw.githubusercontent.com/SainteCroquette/medianXLitemChecker/main/sacred_unique.json"
-    const set_url = "https://raw.githubusercontent.com/SainteCroquette/medianXLitemChecker/main/set.json"
+    const sacred_unique_url = "https://raw.githubusercontent.com/SainteCroquette/medianXLitemChecker/dev/sacred_unique.json"
+    const set_url = "https://raw.githubusercontent.com/SainteCroquette/medianXLitemChecker/dev/set.json"
     $.ajax({
         url: sacred_unique_url,
         success: (data) => {
