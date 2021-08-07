@@ -2,8 +2,8 @@
 // @name         relic scrapper
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  median xl relic documentation scrapper
+// @author       SainteCroquette
 // @match        https://docs.median-xl.com/doc/wiki/relics
 // @icon         https://www.google.com/s2/favicons?domain=median-xl.com
 // @grant        none
