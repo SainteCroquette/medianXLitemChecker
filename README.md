@@ -5,8 +5,11 @@ This is a script meant to display possibles ranges of values for each attributes
 It will then compute a score in percentage for each of the said attributes to give the item a rating from 0 to 100% (which will have a nice rainbow effect)
 However as of now i cannot make the difference between base attributes and the potential bonus that could have been added, so some errors can show up, such as 300% rating
 
+
 <img src="https://i.imgur.com/hdCEjFh.png" alt="rendre preview" width="700"/>
 
+
+Forum link [here](https://forum.median-xl.com/viewtopic.php?f=4&t=65058)
 
 ## Requirements
 
