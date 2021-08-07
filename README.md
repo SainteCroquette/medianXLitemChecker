@@ -32,6 +32,7 @@ Then paste this in it, and you're done !
 // @description NotArmory helper
 // @author SainteCroquette
 // @match https://tsw.vn.cz/char/*
+// @match https://tsw.vn.cz/acc/char.php?name=*
 // @icon https://www.google.com/s2/favicons?domain=vn.cz
 // @grant none
 // ==/UserScript==
