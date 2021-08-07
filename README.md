@@ -23,6 +23,7 @@ example with Tampermonkey
 <img src="https://i.imgur.com/uAiyp7G.png" alt="new user script" width="500"/>
 
 Then paste this in it, and you're done !
+(dont forget to save)
 
 ```js
 // ==UserScript==
