@@ -1,27 +1,3 @@
-// ==UserScript==
-// @name NotArmory Item Checker dev+test
-// @namespace
-// @version 1.0
-// @description NotArmory helper
-// @author SainteCroquette
-// @match https://tsw.vn.cz/char/*
-// @match https://tsw.vn.cz/acc/char.php?name=*
-// @icon https://www.google.com/s2/favicons?domain=vn.cz
-// @grant none
-// ==/UserScript==
-
-// ==UserScript==
-// @name NotArmory Item Checker dev+test
-// @namespace
-// @version 1.0
-// @description NotArmory helper
-// @author SainteCroquette
-// @match https://tsw.vn.cz/char/*
-// @match https://tsw.vn.cz/acc/char.php?name=*
-// @icon https://www.google.com/s2/favicons?domain=vn.cz
-// @grant none
-// ==/UserScript==
-
 const RAINBOW = ["#ff0000",
     "#f08100",
     "#bec600",
