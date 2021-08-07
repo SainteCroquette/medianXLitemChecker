@@ -1,15 +1,3 @@
-// ==UserScript==
-// @name NotArmory Item Checker dev+test
-// @namespace
-// @version 1.0
-// @description NotArmory helper
-// @author SainteCroquette
-// @match https://tsw.vn.cz/char/*
-// @match https://tsw.vn.cz/acc/char.php?name=*
-// @icon https://www.google.com/s2/favicons?domain=vn.cz
-// @grant none
-// ==/UserScript==
-
 const RAINBOW = ["#ff0000",
     "#f08100",
     "#bec600",
@@ -107,6 +95,24 @@ function insert_ranges(html, attr, minMax, val, itemProperties) {
     return format_attribute_line(before, after, minMax, prop)
 }
 
+function format_missing_attribute(attr, minMax) {
+    let code = "<br><span style=\"color:#990000;\">"
+    let attribute = attr
+    console.log(minMax.length)
+    for (let i = 0; i < minMax.length; i++) {
+        attribute = attribute.replace("#", "(" + minMax[i][0] + " - " + minMax[i][1] + ")")
+    }
+    code += attribute + " - </span>"
+        +"</span><span style=\"color:"
+        + get_percentage_color(0) + ";\">"
+        + 0 + "%</span>"
+    return code
+}
+
+function append_missing_attribute(attr, minMax, itemProperties) {
+    itemProperties.push(0)
+    return format_missing_attribute(attr, minMax)
+}
 function get_item_table_container() {
     return document.getElementById("itemdump_wrapper")
 }
@@ -125,6 +131,8 @@ function create_attribute_regex(ref) {
     regex = regex.replaceAll("%", "\\%")
     regex = regex.replaceAll("(", "\\(")
     regex = regex.replaceAll(")", "\\)")
+    regex = regex.replace("!", "(")
+    regex = regex.replace("!", ")")
     regex = regex.replaceAll("#", "\\d+")
     regex = "\^\w*" + regex + "$"
     return regex
@@ -133,11 +141,16 @@ function create_attribute_regex(ref) {
 function iterate_item_attributes(refTable, name, attributes, container, itemProperties) {
     refTable[name].forEach(ref => {
         const reg = new RegExp(create_attribute_regex(ref[0]))
+        let found = false
         attributes.forEach(att => {
             if (att.match(reg)) {
+                found = true
                 container.innerHTML = insert_ranges(container.innerHTML, att, ref.slice(1), findDiff(ref[0], att), itemProperties)
             }
         })
+        if (!found) {
+            container.innerHTML += append_missing_attribute(ref[0], ref.slice(1), itemProperties)
+        }
     })
 }
 
