@@ -51,4 +51,4 @@ $.ajax({
 })
 ```
 
-Just reload tsw.vs.cz & you're good to go !
+Just reload [tsw.vn.cz](https://tsw.vn.cz) & you're good to go !
